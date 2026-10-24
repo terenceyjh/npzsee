@@ -1,0 +1,135 @@
+name: Build and verify NPZSee releases
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  wheels:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: windows-2022, target: x86_64-pc-windows-msvc, python_arch: x64, exe: '.exe' }
+          - { os: windows-11-arm, target: aarch64-pc-windows-msvc, python_arch: arm64, exe: '.exe' }
+          - { os: ubuntu-22.04, target: x86_64-unknown-linux-gnu, python_arch: x64, exe: '' }
+          - { os: ubuntu-24.04-arm, target: aarch64-unknown-linux-gnu, python_arch: arm64, exe: '' }
+          - { os: macos-15-intel, target: x86_64-apple-darwin, python_arch: x64, exe: '' }
+          - { os: macos-15, target: aarch64-apple-darwin, python_arch: arm64, exe: '' }
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    env:
+      MACOSX_DEPLOYMENT_TARGET: '13.0'
+      CARGO_TARGET_DIR: target
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: '1.96.0'
+          components: rustfmt, clippy
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          architecture: ${{ matrix.python_arch }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}
+      - name: Linux desktop build and display libraries
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pkg-config libxkbcommon-dev libwayland-dev libegl1-mesa-dev libx11-dev xvfb libgl1-mesa-dri
+      - run: python -m pip install maturin==1.15.0 twine numpy
+      - run: python -m pip install cargo-zigbuild==0.24.0 ziglang==0.16.0
+        if: runner.os == 'Linux'
+      - run: cargo fmt --check
+      - run: cargo clippy --locked --all-targets --all-features -- -D warnings
+      - run: cargo test --locked --all-features
+      - run: python scripts/audit-dependencies.py
+        if: matrix.target == 'x86_64-unknown-linux-gnu'
+      - run: cargo build --release --locked --features bench --target ${{ matrix.target }}
+      - run: python native/validate_numpy.py
+        env:
+          NPZSEE_BENCH: target/${{ matrix.target }}/release/npzsee-bench${{ matrix.exe }}
+      - name: Build Linux portable wheel
+        if: runner.os == 'Linux'
+        run: maturin build --release --locked --zig --compatibility manylinux_2_28 --target ${{ matrix.target }} --out dist
+      - name: Build Windows or macOS wheel
+        if: runner.os != 'Linux'
+        run: maturin build --release --locked --target ${{ matrix.target }} --out dist
+      - run: python -m twine check dist/*
+      - run: python scripts/check-artifacts.py
+      - run: python -m pip install --no-index --find-links dist npzsee
+      - run: python scripts/check-installed.py
+      - name: Installed portable binary renders all languages
+        if: runner.os == 'Linux'
+        run: xvfb-run -a -s '-screen 0 1440x900x24' python scripts/smoke-locales.py "$(command -v npzsee)"
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+      - name: Standalone archives from the verified wheels
+        shell: bash
+        run: python scripts/package-standalone.py dist/*.whl
+      - uses: actions/upload-artifact@v4
+        with:
+          name: npzsee-wheel-${{ matrix.target }}
+          path: dist/*.whl
+      - uses: actions/upload-artifact@v4
+        with:
+          name: npzsee-standalone-${{ matrix.target }}
+          path: release/NPZSee-*
+      - name: Matching source archives with locked dependency sources
+        if: matrix.target == 'x86_64-unknown-linux-gnu'
+        run: python scripts/make-source-bundle.py
+      - uses: actions/upload-artifact@v4
+        if: matrix.target == 'x86_64-unknown-linux-gnu'
+        with:
+          name: npzsee-sources
+          path: |
+            dist/*.tar.gz
+            release/*corresponding-source.tar.gz*
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: npzsee-checks-${{ matrix.target }}
+          path: validation-output/
+          if-no-files-found: ignore
+  assemble:
+    needs: wheels
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: npzsee-wheel-*
+          path: incoming/wheels
+          merge-multiple: true
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: npzsee-standalone-*
+          path: incoming/standalone
+          merge-multiple: true
+      - uses: actions/download-artifact@v4
+        with:
+          name: npzsee-sources
+          path: incoming/sources
+      - run: python scripts/assemble-release.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: npzsee-pypi
+          path: |
+            publication/pypi/*.whl
+            publication/pypi/*.tar.gz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: npzsee-release
+          path: publication/release/*

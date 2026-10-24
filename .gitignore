@@ -1,0 +1,23 @@
+__pycache__/
+*.py[cod]
+*.egg
+*.egg-info/
+dist/
+build/
+.venv/
+*.so
+.DS_Store
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Local experimental recordings and task instructions
+/data/
+/prompts.md
+/target/
+/.tools/
+/.cache/
+/validation-output/
+/vendor/
+/release/
+/incoming/
+/publication/

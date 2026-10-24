@@ -1,0 +1,27 @@
+npzsee 0.1.0
+SPDX-License-Identifier: GPL-3.0-or-later
+
+npzsee is an independently named Rust rewrite derived from and inspired by
+npyquick. It is a continuation of that project's array-viewing concepts and
+behavior, rather than a claim that all design and provenance are unrelated.
+
+Upstream: https://github.com/LiukDiihMieu/npyquick
+Upstream base commit: 6be16fd (2026 source snapshot).
+Upstream copyright: Copyright (C) 2026 LiukDiihMieu.
+Rust rewrite and modifications: Copyright (C) 2026 npzsee contributors.
+
+Modifications include native Rust data loading and rendering, background jobs,
+array sidebar, table-first hierarchy and JSON navigation, histogram area fill,
+packaging, portability fixes, and a separate name. See CHANGELOG.md and agent.md.
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the accompanying LICENSE for details.
+
+Third-party dependencies and fonts retain their own licenses and copyright
+notices. See LICENSES/ and docs/open-source.md. The GPL identifier describes the
+application as a whole; it does not replace those third-party licenses.

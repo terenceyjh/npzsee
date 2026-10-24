@@ -1,0 +1,72 @@
+name: Publish to PyPI or TestPyPI
+on:
+  workflow_dispatch:
+    inputs:
+      build_run_id:
+        description: Successful main-branch wheels.yml run ID to publish
+        required: true
+        type: string
+      index:
+        description: Package index
+        required: true
+        default: testpypi
+        type: choice
+        options: [testpypi, pypi]
+permissions:
+  contents: read
+jobs:
+  prepare:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - name: Accept only a successful build from this repository's main branch
+        uses: actions/github-script@v7
+        env:
+          BUILD_RUN_ID: ${{ inputs.build_run_id }}
+        with:
+          script: |
+            const id = Number(process.env.BUILD_RUN_ID);
+            if (!Number.isSafeInteger(id) || id <= 0) throw new Error('Invalid build run ID');
+            const {data: run} = await github.rest.actions.getWorkflowRun({...context.repo, run_id: id});
+            if (run.conclusion !== 'success' || run.head_branch !== 'main' ||
+                !['push', 'workflow_dispatch'].includes(run.event) ||
+                run.head_repository.full_name !== `${context.repo.owner}/${context.repo.repo}` ||
+                run.path !== '.github/workflows/wheels.yml') {
+              throw new Error('Only successful main-branch release builds may be published');
+            }
+            core.notice(`Publishing build ${run.id}, source ${run.head_sha}`);
+      - uses: actions/download-artifact@v4
+        with:
+          name: npzsee-pypi
+          path: packages
+          run-id: ${{ inputs.build_run_id }}
+          github-token: ${{ github.token }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: validated-pypi-packages
+          path: packages/*
+  publish:
+    needs: prepare
+    runs-on: ubuntu-22.04
+    environment:
+      name: ${{ inputs.index }}
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: validated-pypi-packages
+          path: packages
+      - name: Publish to TestPyPI
+        if: inputs.index == 'testpypi'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          packages-dir: packages/
+      - name: Publish to PyPI
+        if: inputs.index == 'pypi'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: packages/

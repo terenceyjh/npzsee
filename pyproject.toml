@@ -1,0 +1,53 @@
+[build-system]
+requires = ["maturin>=1.15,<2"]
+build-backend = "maturin"
+
+[project]
+name = "npzsee"
+dynamic = ["version"]
+description = "Fast native viewer for multidimensional NumPy arrays"
+authors = [{ name = "Jinghao Yang" }]
+readme = "README.md"
+requires-python = ">=3.10"
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE", "NOTICE", "LICENSES/**/*"]
+keywords = ["numpy", "npz", "npy", "viewer", "scientific", "desktop"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: X11 Applications",
+    "Intended Audience :: Science/Research",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS :: MacOS X",
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Visualization",
+]
+
+[project.urls]
+Homepage = "https://github.com/terenceyjh/npzsee"
+Repository = "https://github.com/terenceyjh/npzsee"
+Issues = "https://github.com/terenceyjh/npzsee/issues"
+Changelog = "https://github.com/terenceyjh/npzsee/blob/main/CHANGELOG.md"
+
+[tool.maturin]
+bindings = "bin"
+strip = true
+include = [
+    { path = "locales/**/*", format = "sdist" },
+    { path = "assets/**/*", format = "sdist" },
+    { path = "README.zh-CN.md", format = "sdist" },
+    { path = ".cargo/config.toml", format = "sdist" },
+    { path = ".github/workflows/*.yml", format = "sdist" },
+    { path = ".gitattributes", format = "sdist" },
+    { path = "docs/**/*", format = "sdist" },
+    { path = "scripts/**/*", format = "sdist" },
+    { path = "LICENSES/**/*", format = "sdist" },
+    { path = "NOTICE", format = "sdist" },
+    { path = "CHANGELOG.md", format = "sdist" },
+    { path = "CONTRIBUTING.md", format = "sdist" },
+    { path = "SECURITY.md", format = "sdist" },
+    { path = "agent.md", format = "sdist" },
+    { path = "native/validate_numpy.py", format = "sdist" },
+]
+exclude = ["data/**", ".tools/**", "target/**", "validation-output/**", "dist/**"]

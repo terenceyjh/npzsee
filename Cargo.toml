@@ -1,0 +1,48 @@
+[package]
+name = "npzsee"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.96"
+default-run = "npzsee"
+license = "GPL-3.0-or-later"
+description = "Fast native viewer for multidimensional NumPy arrays"
+authors = ["Jinghao Yang"]
+repository = "https://github.com/terenceyjh/npzsee"
+
+[lib]
+path = "native/src/lib.rs"
+
+[[bin]]
+name = "npzsee"
+path = "native/src/main.rs"
+
+[[bin]]
+name = "npzsee-bench"
+path = "native/src/bench.rs"
+required-features = ["bench"]
+
+[features]
+bench = []
+
+[dependencies]
+anyhow = "1.0"
+eframe = { version = "=0.36.2", default-features = false, features = ["glow", "x11", "wayland"] }
+egui_extras = "=0.36.2"
+half = "2.7"
+memmap2 = "0.9"
+rfd = "0.17"
+serde_json = "1.0"
+tempfile = "3.27"
+zip = { version = "=9.0.5", default-features = false, features = ["deflate-flate2-zlib-rs"] }
+image = { version = "0.25", default-features = false, features = ["png"] }
+unicode-bidi = "0.3"
+sys-locale = "0.3"
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.61", features = ["Win32_System_Console"] }
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true
+
