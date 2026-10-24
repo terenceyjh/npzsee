@@ -41,11 +41,12 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           key: ${{ matrix.target }}
+          cache-on-failure: true
       - name: Linux desktop build and display libraries
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y pkg-config libxkbcommon-dev libwayland-dev libegl1-mesa-dev libx11-dev xvfb libgl1-mesa-dri
+          sudo apt-get install -y pkg-config libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev libegl1-mesa-dev libx11-dev xvfb libgl1-mesa-dri
       - run: python -m pip install maturin==1.15.0 twine numpy
       - run: python -m pip install cargo-zigbuild==0.24.0 ziglang==0.16.0
         if: runner.os == 'Linux'

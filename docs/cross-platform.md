@@ -24,6 +24,15 @@ still depend on the host desktop. Linux requires normal system desktop/driver
 libraries even though Python is unnecessary. macOS candidates are not Developer
 ID signed or notarized; Apple distribution signing can be added separately.
 
+On a minimal Ubuntu/Debian desktop, the runtime libraries can be installed with:
+
+```sh
+sudo apt-get install libxkbcommon0 libxkbcommon-x11-0 libx11-6 libwayland-client0 libegl1 libgl1
+```
+
+The X11 keyboard library is a runtime dependency even though it is loaded
+dynamically. The release CI installs its development package as well.
+
 ## Local Windows build
 
 ```powershell

@@ -13,6 +13,8 @@ impl UiText {
                 section.format.font_id.size = 20.;
             }
             eframe::egui::WidgetText::LayoutJob(job)
+        } else if let eframe::egui::WidgetText::RichText(text) = widget {
+            std::sync::Arc::unwrap_or_clone(text).heading().into()
         } else {
             widget
         }
@@ -72,7 +74,14 @@ impl From<UiText> for eframe::egui::WidgetText {
                 // Runs remain logical: HarfRust joins and shapes RTL glyphs.
                 // Reversing characters first would reverse the glyphs twice.
                 let start = job.text.len();
-                job.text.push_str(&text.0[run]);
+                job.text.extend(
+                    text.0[run].chars().filter(|c| {
+                        !matches!(c, '\u{2066}' | '\u{2067}' | '\u{2068}' | '\u{2069}')
+                    }),
+                );
+                if job.text.len() == start {
+                    continue;
+                }
                 job.sections.push(eframe::egui::text::LayoutSection {
                     leading_space: 0.,
                     byte_range: eframe::egui::text::ByteIndex(start)
@@ -185,7 +194,18 @@ impl Language {
     pub fn format(self, key: &str, values: &[(&str, String)]) -> UiText {
         let mut text = self.logical(key).to_owned();
         for (name, value) in values {
-            text = text.replace(&format!("{{{name}}}"), value);
+            // Isolate inserted indices/paths/numbers from surrounding RTL text.
+            // This keeps [2, 3], file extensions and negative values readable.
+            let value = if self == Self::Arabic {
+                let rtl = unicode_bidi::BidiInfo::new(value, None).has_rtl();
+                format!(
+                    "{}{value}\u{2069}",
+                    if rtl { '\u{2067}' } else { '\u{2066}' }
+                )
+            } else {
+                value.clone()
+            };
+            text = text.replace(&format!("{{{name}}}"), &value);
         }
         visual_text(&text)
     }
@@ -282,5 +302,19 @@ mod tests {
         assert!(job.sections.len() >= 2);
         assert!(job.text.contains("فتح"));
         assert_eq!(String::from(visual_text(original)), original);
+    }
+
+    #[test]
+    fn array_indices_are_isolated_from_surrounding_arabic_text() {
+        let widget: eframe::egui::WidgetText = Language::Arabic
+            .format("slice", &[("shape", "[2, 3]".into()), ("rows", "2".into())])
+            .into();
+        let eframe::egui::WidgetText::LayoutJob(job) = widget else {
+            panic!("expected bidi layout")
+        };
+        assert!(job.sections.iter().any(|section| &job.text
+            [section.byte_range.start.0..section.byte_range.end.0]
+            == "[2, 3]"));
+        assert!(!job.text.contains(['\u{2066}', '\u{2067}', '\u{2069}']));
     }
 }

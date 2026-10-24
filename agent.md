@@ -31,3 +31,17 @@ NPZSEE_TOOLS_ROOT. No optional MCP service was enabled. Do not upload user data,
 local tools, account credentials, SDKs, or validation recordings. Actual CI
 execution and user-reported Mac predecessor checks must be distinguished from
 GUI verification on each physical platform.
+
+### Release verification follow-up
+
+- The first public CI run exposed a missing libxkbcommon-x11 runtime library in
+  both Linux runners. Added its development/runtime package and documented the
+  minimal Linux runtime dependencies; no application data/parser failure occurred.
+- Windows x86_64/ARM64 and macOS ARM64 native build, tests, NumPy oracle and actual
+  wheel installation passed in that first run. Remaining/final status is tracked
+  separately; failed initial CI is not claimed as a complete release verification.
+- Added directional isolates for Arabic formatted indices/numbers/paths. Native
+  Unicode and clipboard copies remain unchanged. 31 tests and strict clippy pass.
+- Six languages passed 11 real Windows GUI screenshots each; the standard isolated
+  sdist-to-wheel build and pip installation passed. A vendored source archive
+  resolves all 313 packages offline with an empty dependency cache.
