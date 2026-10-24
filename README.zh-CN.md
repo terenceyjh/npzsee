@@ -2,10 +2,14 @@
 
 **快速浏览多维 NumPy 数组的原生桌面工具。**
 
-[English](README.md) · [下载](https://github.com/terenceyjh/npzsee/releases) · [跨平台说明](docs/cross-platform.md)
+[English](README.md) · [下载](https://github.com/terenceyjh/npzsee/releases) · [VS Code 插件版](https://github.com/terenceyjh/NPZSee-vscode) · [跨平台说明](docs/cross-platform.md)
 
 NPZSee 使用 Rust + egui 编写，可以直接打开 `.npy`、`.npz` 文件。独立程序无需
 Python、NumPy、Qt 或 Matplotlib；也提供安装同一个原生程序的 pip 安装包。
+
+本仓库提供可独立运行的 **桌面版**，支持 Windows、macOS 和 Linux。如果你希望直接
+在 VS Code 中查看 `.npy`、`.npz` 文件，可以使用配套的
+**[NPZSee for VS Code 插件版](https://github.com/terenceyjh/NPZSee-vscode)**。
 
 ## 运行
 

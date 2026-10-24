@@ -2,11 +2,15 @@
 
 **A fast native viewer for multidimensional NumPy arrays.**
 
-[简体中文](README.zh-CN.md) · [Downloads](https://github.com/terenceyjh/npzsee/releases) · [Platform notes](docs/cross-platform.md)
+[简体中文](README.zh-CN.md) · [Downloads](https://github.com/terenceyjh/npzsee/releases) · [VS Code extension](https://github.com/terenceyjh/NPZSee-vscode) · [Platform notes](docs/cross-platform.md)
 
 Open `.npy` and `.npz` files, navigate dimensions, inspect exact values, and plot
 curves and distributions. NPZSee is written in **Rust with egui**. Standalone
 downloads need no Python, NumPy, Qt, or Matplotlib.
+
+This repository provides the **standalone desktop edition** for Windows, macOS
+and Linux. To view `.npy` and `.npz` files inside your editor, use the companion
+**[NPZSee for VS Code](https://github.com/terenceyjh/NPZSee-vscode)** extension.
 
 ## Install and run
 
