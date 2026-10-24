@@ -2,7 +2,7 @@
 
 **A fast native viewer for multidimensional NumPy arrays.**
 
-[简体中文](README.zh-CN.md) · [Downloads](https://github.com/terenceyjh/npzsee/releases) · [VS Code extension](https://github.com/terenceyjh/NPZSee-vscode) · [Platform notes](docs/cross-platform.md)
+[简体中文](README.zh-CN.md) · [PyPI](https://pypi.org/project/npzsee/) · [Downloads](https://github.com/terenceyjh/npzsee/releases) · [VS Code extension](https://github.com/terenceyjh/NPZSee-vscode) · [Platform notes](docs/cross-platform.md)
 
 Open `.npy` and `.npz` files, navigate dimensions, inspect exact values, and plot
 curves and distributions. NPZSee is written in **Rust with egui**. Standalone
@@ -14,6 +14,29 @@ and Linux. To view `.npy` and `.npz` files inside your editor, use the companion
 
 ## Install and run
 
+### Install with pip
+
+NPZSee is now available on **[PyPI](https://pypi.org/project/npzsee/)**. With
+Python 3.10 or newer, install it and launch the desktop app:
+
+```sh
+python -m pip install npzsee
+npzsee
+```
+
+To open a file directly:
+
+```sh
+npzsee "path/to/arrays.npz"
+```
+
+pip selects the matching precompiled wheel for your system. The wheel installs
+the same native executable as the standalone download, with no Python runtime
+dependencies. Without a matching wheel, building the source distribution
+requires Rust and desktop development libraries. See [platform notes](docs/cross-platform.md).
+
+### Standalone downloads
+
 Download the standalone archive matching your OS and CPU from
 [GitHub Releases](https://github.com/terenceyjh/npzsee/releases), then extract it:
 
@@ -24,23 +47,6 @@ Download the standalone archive matching your OS and CPU from
 
 Pass a file path with `npzsee "path/to/arrays.npz"`, or drop a file on the window.
 Downloads are currently unsigned release candidates.
-
-### pip
-
-Python 3.10+ can install the matching precompiled wheel. **The package has not
-yet been published to PyPI.** For a downloaded wheel:
-
-```sh
-python -m pip install ./npzsee-0.1.0-py3-none-<your-platform>.whl
-npzsee
-npzsee "path/to/arrays.npz"
-```
-
-After the first PyPI publication, installation will be `python -m pip install
-npzsee`. The wheel installs the same native executable as the standalone
-download, with no Python runtime dependencies. Without a matching wheel,
-building the source distribution requires Rust and desktop development
-libraries. See [publishing](docs/publishing.md).
 
 ## Features
 

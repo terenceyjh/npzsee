@@ -2,7 +2,7 @@
 
 **快速浏览多维 NumPy 数组的原生桌面工具。**
 
-[English](README.md) · [下载](https://github.com/terenceyjh/npzsee/releases) · [VS Code 插件版](https://github.com/terenceyjh/NPZSee-vscode) · [跨平台说明](docs/cross-platform.md)
+[English](README.md) · [PyPI](https://pypi.org/project/npzsee/) · [下载](https://github.com/terenceyjh/npzsee/releases) · [VS Code 插件版](https://github.com/terenceyjh/NPZSee-vscode) · [跨平台说明](docs/cross-platform.md)
 
 NPZSee 使用 Rust + egui 编写，可以直接打开 `.npy`、`.npz` 文件。独立程序无需
 Python、NumPy、Qt 或 Matplotlib；也提供安装同一个原生程序的 pip 安装包。
@@ -11,9 +11,32 @@ Python、NumPy、Qt 或 Matplotlib；也提供安装同一个原生程序的 pip
 在 VS Code 中查看 `.npy`、`.npz` 文件，可以使用配套的
 **[NPZSee for VS Code 插件版](https://github.com/terenceyjh/NPZSee-vscode)**。
 
-## 运行
+## 安装与运行
 
-从 GitHub Releases 下载对应系统和处理器的文件，完整解压后运行：
+### 通过 pip 安装
+
+NPZSee 已发布到 **[PyPI](https://pypi.org/project/npzsee/)**。使用 Python 3.10 或更新版本，
+在终端中安装，然后运行 `npzsee` 即可启动桌面界面：
+
+```sh
+python -m pip install npzsee
+npzsee
+```
+
+也可以直接打开指定文件：
+
+```sh
+npzsee "文件路径.npz"
+```
+
+pip 会自动选择对应平台的预编译安装包，安装的原生程序与独立下载版相同，无需
+NumPy、Qt 或 Matplotlib。没有匹配的预编译包时，从源码构建需要 Rust 和桌面开发库；
+平台要求见[跨平台说明](docs/cross-platform.md)。
+
+### 下载独立程序
+
+从 [GitHub Releases](https://github.com/terenceyjh/npzsee/releases) 下载对应系统和处理器的文件，
+完整解压后运行：
 
 - Windows：双击 `npzsee.exe`。
 - macOS 13 及以上：打开 `NPZSee.app`；M 系列芯片选 arm64，Intel 芯片选 x86_64。
@@ -21,13 +44,6 @@ Python、NumPy、Qt 或 Matplotlib；也提供安装同一个原生程序的 pip
 
 打开窗口后选择文件，或将文件拖入窗口；也可以使用 `npzsee "文件路径.npz"`。
 当前候选程序没有商业代码签名或 Apple 公证。
-
-PyPI 尚未正式发布。现在可以安装已下载的对应平台 wheel；正式发布后将支持：
-
-```sh
-python -m pip install npzsee
-npzsee
-```
 
 ## 主要功能
 
