@@ -74,3 +74,16 @@ python scripts/check-artifacts.py
 项目的账号级 token，之后可收紧到项目范围。账号注册与 2FA 仍然必须由账号持有人完成。
 
 同名、同版本、同文件名上传后不能覆盖修改；后续更新应提高版本。当前还没有向 PyPI 上传。
+
+## GitHub Release 自动上传
+
+公开测试版下载：<https://github.com/terenceyjh/npzsee/releases/tag/0.1.0>。
+六个平台的成功构建 ID 为 **40091597920**，后续配置 PyPI 后直接发布这一组文件。
+
+`.github/workflows/release-github.yml` 可从成功的主分支构建取回已验证产物，核对来源和
+校验值，再直接上传 GitHub Release。这样无需从本机反复上传大文件。此次发布流程：
+<https://github.com/terenceyjh/npzsee/actions/runs/40093347966>。
+
+后续版本在 GitHub Actions 中选择 **Publish GitHub release**，填写成功的构建 ID 和
+与包版本一致的 tag。发布说明放在 `docs/releases/<版本>.md`。流程只接受成功的
+主分支构建，且不会覆盖已经公开的同名 Release。

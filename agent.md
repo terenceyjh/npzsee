@@ -45,3 +45,26 @@ GUI verification on each physical platform.
 - Six languages passed 11 real Windows GUI screenshots each; the standard isolated
   sdist-to-wheel build and pip installation passed. A vendored source archive
   resolves all 313 packages offline with an empty dependency cache.
+
+### Final delivery
+
+- Final native CI run 40091597920 passed all six OS/CPU combinations, 31 Rust tests
+  and 24 NumPy compatibility cases per platform, plus actual wheel installation.
+  Both Linux architectures rendered 66 frames (six languages × 11) from the
+  installed portable binaries. Rendered Linux Chinese/Arabic frames were inspected.
+- Downloaded all artifacts and independently compared each standalone executable
+  with its matching wheel, inspected architectures/minimum OS/runtime imports,
+  checked font/crate notices and matched core source files to commit 063512d.
+  The final corresponding-source archive resolves all 313 packages offline.
+- The final CI Windows wheel was installed and its Chinese GUI rendered 11 frames.
+  Twine checks pass for six wheels and the standard source distribution.
+- Local large-file upload transport stalled. Added an artifact-based GitHub release
+  workflow rather than rebuilding. Release run 40093347966 succeeded and published
+  the 0.1.0 prerelease with 15 assets (six standalone archives, six wheels, two source
+  archives and SHA256SUMS). All public server SHA-256 digests match local files.
+- Existing GitHub credentials authorized the new public repository. pypi/testpypi
+  environments are prepared and restricted to main. No PyPI upload was attempted:
+  account registration/email verification/2FA and the pending Trusted Publisher
+  must be configured by the user. See docs/publishing.md for exact fields.
+- No optional MCP was enabled, no private recording was uploaded, and sibling
+  projects were left unchanged. The standalone repository is ready for ongoing work.
